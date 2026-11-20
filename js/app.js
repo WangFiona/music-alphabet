@@ -428,11 +428,48 @@
     return new Promise((res) => { rec.img.onload = res; rec.img.onerror = res; rec.img.src = rec.url; });
   }
 
+  // vector version of a letter, built from the stored stroke points (1000 × 1000 viewBox)
+  function letterSVG(rec) {
+    const n = (v) => +v.toFixed(1);
+    let body = '';
+    for (const st of rec.strokes) {
+      const runs = [];
+      let run = [];
+      for (const p of st.points) {
+        if (p) run.push(p);
+        else if (run.length) { runs.push(run); run = []; }
+      }
+      if (run.length) runs.push(run);
+
+      let g = '';
+      for (const r of runs) {
+        if (r.length === 1) {
+          g += `<circle cx="${n(r[0].x)}" cy="${n(r[0].y)}" r="${n(r[0].w / 2)}" fill="${st.color}"/>`;
+        } else if (r.every((p) => p.w === r[0].w)) {
+          // constant width: one path
+          g += `<path d="M${r.map((p) => `${n(p.x)} ${n(p.y)}`).join(' L')}" stroke-width="${n(r[0].w)}"/>`;
+        } else {
+          // width follows volume: one segment per step, like the canvas drawing
+          for (let i = 1; i < r.length; i++) {
+            g += `<line x1="${n(r[i - 1].x)}" y1="${n(r[i - 1].y)}" x2="${n(r[i].x)}" y2="${n(r[i].y)}" stroke-width="${n((r[i - 1].w + r[i].w) / 2)}"/>`;
+          }
+        }
+      }
+      body += `  <g stroke="${st.color}" fill="none" stroke-linecap="round" stroke-linejoin="round">${g}</g>\n`;
+    }
+    return new Blob([
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n` +
+      `  <title>${rec.letter}</title>\n${body}</svg>\n`,
+    ], { type: 'image/svg+xml' });
+  }
+
   function letterFiles(rec, folder = '') {
     const L = rec.letter;
     const files = [
       [`${folder}${L}.png`, rec.png],
       [`${folder}${L}.jpg`, rec.jpg],
+      [`${folder}${L}.svg`, letterSVG(rec)],
       [`${folder}${L}_combined.wav`, AudioEngine.encodeWAV(rec.mix, rec.sampleRate)],
       [`${folder}${L}_score.musicxml`, new Blob([rec.xml], { type: 'application/vnd.recordare.musicxml+xml' })],
     ];

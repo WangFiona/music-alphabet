@@ -7,7 +7,7 @@ Draw the alphabet with your voice. Sing into the microphone: pitch moves the pen
 - Pitch → vertical position, time → horizontal position; multiple strokes per letter
 - Volume can control nothing, line thickness, or a wobble in the line
 - Each saved letter downloads as a zip:
-  - transparent PNG and white-background JPG (3000 × 3000 px)
+  - transparent PNG and white-background JPG (3000 × 3000 px), plus a vector SVG
   - a WAV recording of every stroke, plus all strokes overlaid in one file
   - a MusicXML score
 - Write mode: type words, see them in your letters, play the recordings in sequence, and save the word as PNG, WAV, or MusicXML
