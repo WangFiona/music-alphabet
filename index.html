@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music Alphabet</title>
+  <!-- Jost is a free Futura-like fallback for machines without Futura -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Music Alphabet</h1>
+    <nav>
+      <button class="tab active" data-view="draw">Draw</button>
+      <button class="tab" data-view="write">Write</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ───────────── DRAW ───────────── -->
+    <section id="view-draw" class="view active">
+      <div class="stage-wrap">
+        <div class="axis-y">pitch ↑</div>
+        <div class="stage" id="stage">
+          <canvas id="draw" width="1000" height="1000"></canvas>
+          <canvas id="overlay" width="1000" height="1000"></canvas>
+          <div class="mic-gate" id="mic-gate">
+            <button class="btn primary" id="enable-mic">Enable microphone</button>
+            <p id="mic-msg">Sing to draw. Pitch moves the pen up and down,<br>time moves it left to right.</p>
+          </div>
+        </div>
+        <div class="axis-x">time →</div>
+      </div>
+
+      <aside class="panel">
+        <div class="current">
+          <div class="eyebrow">Now drawing</div>
+          <div class="big" id="current-letter">A</div>
+          <div class="sub" id="stroke-count">0 strokes</div>
+        </div>
+
+        <div class="readout">
+          <div class="readout-row">
+            <span id="note">—</span>
+            <span id="hz"></span>
+          </div>
+          <div class="meter"><div class="meter-fill" id="meter-fill"></div><div class="meter-gate" id="meter-gate"></div></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="stroke-btn">Sing stroke <kbd>space</kbd></button>
+          <div class="row">
+            <button class="btn" id="undo-btn">Undo</button>
+            <button class="btn" id="clear-btn">Clear</button>
+          </div>
+          <button class="btn" id="save-btn">Save letter <kbd>enter</kbd></button>
+          <label class="check"><input type="checkbox" id="auto-download" checked> Download files when saving</label>
+        </div>
+
+        <div class="settings">
+          <div class="field">
+            <label for="range">Voice range</label>
+            <select id="range"></select>
+          </div>
+          <div class="field">
+            <label for="duration">Stroke length <span id="duration-val"></span></label>
+            <input type="range" id="duration" min="2" max="10" step="0.5">
+          </div>
+          <div class="field">
+            <label>Volume controls</label>
+            <div class="seg" id="vol-mode">
+              <button data-mode="off">Nothing</button>
+              <button data-mode="thickness">Thickness</button>
+              <button data-mode="jitter">Wobble</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="width">Line width <span id="width-val"></span></label>
+            <input type="range" id="width" min="1" max="40" step="1">
+          </div>
+          <div class="field">
+            <label>Stroke colour</label>
+            <div class="colors">
+              <input type="color" id="color">
+              <div class="swatches" id="swatches"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="gate">Noise gate <span id="gate-val"></span></label>
+            <input type="range" id="gate" min="0.002" max="0.08" step="0.002">
+          </div>
+        </div>
+      </aside>
+
+      <div class="strip" id="strip"></div>
+    </section>
+
+    <!-- ───────────── WRITE ───────────── -->
+    <section id="view-write" class="view">
+      <input id="word-input" class="word-input" placeholder="Type a word" autocomplete="off" spellcheck="false">
+      <div class="row wrap">
+        <button class="btn primary" id="play-btn">Play</button>
+        <button class="btn" id="stop-btn">Stop</button>
+        <label class="check"><input type="checkbox" id="trim"> Trim silence between letters</label>
+      </div>
+      <div class="word-wrap" id="word-wrap">
+        <canvas id="word"></canvas>
+        <p class="empty" id="word-empty">Draw some letters, then type a word to write with them.</p>
+      </div>
+      <div class="row wrap">
+        <button class="btn" id="word-png">Save word PNG</button>
+        <button class="btn" id="word-wav">Save word audio</button>
+        <button class="btn" id="word-score">Save word score</button>
+        <span class="spacer"></span>
+        <button class="btn" id="export-all">Export alphabet</button>
+        <button class="btn" id="reset-all">Reset alphabet</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="js/pitch.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
